@@ -1,0 +1,165 @@
+<!--
+  Copyright 2013,2014 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<script type="text/x-red" data-template-name="tessel in">
+    <div class="form-row">
+        <label for="node-input-tessel"><i class="fa fa-tasks"></i> Tessel Module</label>
+        <input type="text" id="node-input-tessel">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port"><i class="fa fa-circle"></i> Port</label>
+        <input type="text" id="node-input-pin" placeholder="A">
+    </div>
+   
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips"><b>Note:</b> You cannot use the same port for both output and input.</div>
+</script>
+
+<script type="text/x-red" data-help-name="tessel in">
+    <p>Tessel input node. Connects to Tessel board and monitors the selected port for changes. Uses <a href="http://tessel.io/" target="_new"><i>Tessel</i>.</a></p>
+    
+    <p>You can select ports or USB. Outputs the value read as <b>msg.payload</b> and the port as <b>msg.topic</b>.</p>
+    <p>It only outputs on a change of value - fine for digital inputs, but you can get a lot of data from analogue pins which you must then handle.</p>
+    <p>You can set the sample rate in ms from 20 to 65535.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('tessel in',{
+        category: 'Tessel',
+        color:"#FF4D4D",
+        defaults: {
+            name: {value:""},
+            pin: {value:"",required:true},
+            state: {value:"INPUT",required:true},
+            tessel: {type:"tessel-board"}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "tessel.png",
+        label: function() {
+            var a = "";
+            if (this.state == "ANALOG") a = "A";
+            return this.name||"Pin: "+a+this.pin;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="tessel out">
+    <div class="form-row">
+        <label for="node-input-tessel"><i class="fa fa-list-alt"></i> Tessel module</label>
+        <input type="text" id="node-input-tessel">
+    </div>
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Port</label>
+        <input type="text" id="node-input-pin" placeholder="A">
+    </div>
+    <div class="form-row">
+        <label for="node-input-state"><i class="fa fa-wrench"></i> Type</label>
+        <select type="text" id="node-input-state" style="width: 200px;">
+            <option value="OUTPUT">Digital (0/1)</option>
+            <option value="PWM">Analogue (0-255)</option>
+            <option value="SERVO">Servo </option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips"><b>Note:</b> You cannot use the same pin for both output and input.</div>
+</script>
+
+<script type="text/x-red" data-help-name="tessel out">
+    <p>Tessel output node. Connects to local Tessel and writes to the selected port.</p>
+    <p>The Tessel must be loaded with the Standard Firmata sketch available in the Arduino examples.</p>
+    <p>You can select Digital, Analogue (PWM) or Servo type outputs. Expects a numeric value in <b>msg.payload</b>. The port is set in the properties panel.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('tessel out',{
+        category: 'Tessel',
+        color:"#FF4D4D",
+        defaults: {
+            name: {value:""},
+            pin: {value:"",required:true},
+            state: {value:"",required:true},
+            tessel: {type:"tessel-board"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "tessel.png",
+        align: "right",
+        label: function() {
+            return this.name||"Port: "+this.port;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="tessel-board">
+    <div class="form-row">
+        <label for="node-config-input-device"><i class="fa fa-random"></i> Port</label>
+        <input type="text" id="node-config-input-device" style="width:60%;" placeholder="e.g. /dev/ttyUSB0  COM1"/>
+        <a id="node-config-lookup-serial" class="btn"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
+    </div>
+    <div class="form-tips"><b>Tip:</b> Use search to try to auto-detect serial port.</div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('tessel-board',{
+        category: 'config',
+        defaults: {
+            device: {value:"",required:true}
+        },
+        label: function() {
+            return this.device||"tessel";
+        },
+        oneditprepare: function() {
+            try {
+                $("#node-config-input-device").autocomplete( "destroy" );
+            } catch(err) { }
+            $("#node-config-lookup-serial").click(function() {
+                $("#node-config-lookup-serial-icon").removeClass('fa-search');
+                $("#node-config-lookup-serial-icon").addClass('spinner');
+                $("#node-config-lookup-serial").addClass('disabled');
+
+                $.getJSON('arduinoports',function(data) {
+                    $("#node-config-lookup-serial-icon").addClass('fa-search');
+                    $("#node-config-lookup-serial-icon").removeClass('spinner');
+                    $("#node-config-lookup-serial").removeClass('disabled');
+                    var ports = [];
+                    $.each(data, function(i, port){
+                        ports.push(port);
+                    });
+                    $("#node-config-input-device").autocomplete({
+                        source:ports,
+                        minLength:0,
+                        close: function( event, ui ) {
+                            $("#node-config-input-device").autocomplete( "destroy" );
+                        }
+                    }).autocomplete("search","");
+                });
+            });
+        }
+    });
+</script>
