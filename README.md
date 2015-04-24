@@ -25,7 +25,7 @@ For Tessel setup, go to the folder where node-red is installed. It should be fou
 cd node_modules
 
 Inside this folder, install tessel.
-npm install -g tessel
+npm install tessel
  You may need to do a sudo if it doesn't work.
  
 You should see both tessel and node-red folders.
@@ -50,9 +50,21 @@ Go to your browser localhost:1880 again. You should be able to see new nodes for
 
 As I am quite a noob, here are the current issues :
 The JS and HTML files as of today are not working, i.e, you can see the nodes and dialog boxes ( I adapted heavily from the Arduino Firmata sample), so I need experts out there to help get it right.
+#To Do
+Propose a framework of what nodes should be created for the Tessel family of boards and modules.
+- currently we only npm install what we need for each module, e.g, ambient, climate etc. 
+- I don't think we can have a generic Tessel In node. So perhaps we should create node templates for each node should we need to do settings for each module.
+- Similar for Tessel Out and Tessel Base board.
+Schema 
+For each board, there are ports and a gpio bank. Tessel 1 has 4 ports, 1 gpio bank with digital, analog and PMV pins. Tessel 2 has ethernet, usb 2.0, 2 ports, and a gpio bank. also, there is a micro-usb for power and input/output. So, we can create 2 Tessel Board nodes for each model.
+For modules, we need to specify which port the module is plugged in to. A drop down of A, B, C or D (omit C for modules like camera), or GPIO pin no. This will be passed to the script portion to define the module?
+
+There are lines like "portlist" and "pins" in the arduino-firmata script, which I suppose has a similar setup as Tessel. Tried looking through the tessel scripts and js files....beyond my abilities to sense-make.
+
+I think the first test is to do the blink test from node-red. Drag a Tessel 1 node as output, and an inject as origin/input. Deploy it by passing "tessel blink" as msg.payload. If it connects and blinks, it should be ok...i.e. Hello World from Node Red works.
 
 # Examples
 Here is some example setup/pics/code etc to get a basic example running with Node Red.
 
 # Contact
-Having an issue with any of this? Check out [the forumns](https://forums.tessel.io/) and ask for help!
+Having an issue with any of this? Check out [the forums](https://forums.tessel.io/) and ask for help!
