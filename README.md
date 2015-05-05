@@ -62,6 +62,13 @@ For modules, we need to specify which port the module is plugged in to. A drop d
 There are lines like "portlist" and "pins" in the arduino-firmata script, which I suppose has a similar setup as Tessel. Tried looking through the tessel scripts and js files....beyond my abilities to sense-make.
 
 I think the first test is to do the blink test from node-red. Drag a Tessel 1 node as output, and an inject as origin/input. Deploy it by passing "tessel blink" as msg.payload. If it connects and blinks, it should be ok...i.e. Hello World from Node Red works.
+#NEW
+Realised after reading the examples on Beaglebone and Raspberry Pi, I got it wrong. Need to deploy Node Red on Tessel instead on on localhost of terminal/computer. So, doing 127.0.0.1:1880 won't work. 
+It has to be on something like http://tessel.localhost:1880.  And this is started on command line like node-red-pi...at least on the examples. 
+
+Maybe we need to look at  http://nodered.org/docs/embedding.html to figure out on Node Red side? 
+
+Anyone?
 
 # Examples
 Here is some example setup/pics/code etc to get a basic example running with Node Red.
