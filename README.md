@@ -1,3 +1,5 @@
+**[UNMAINTAINED] This library does not have a maintainer. The source code and repository will be kept at this URL indefinitely. If you'd like to help maintain this codebase, create an issue on this repo explaining why you'd like to become a maintainer and tag @tessel/maintainers in the body.**
+
 # tessel-node-red
 A library that allows users to get Node Red working with Tessel and it's module ecosystem.
 Node Red is an IBM open-source project for visual representation of programming. Similar in concept to Scratch, it provides a visual representation of inputs, outputs, functions and so forth as draggable and droppable nodes in a workspace, and users can re-use the codes for other projects.
